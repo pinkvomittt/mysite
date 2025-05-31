@@ -1,42 +1,28 @@
 const express = require('express');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
-const SQLiteStore = require('connect-sqlite3')(session);
 
 const app = express();
 
-// Database setup
-const db = new sqlite3.Database('./users.db', (err) => {
-  if (err) console.error(err.message);
-  else console.log('Connected to SQLite database.');
-});
-
-db.run(`CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE,
-  password TEXT
-)`);
-
-// Middleware
+// Middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
+
+// Setup session middleware
 app.use(session({
-  store: new SQLiteStore,
-  secret: 'secret',
+  secret: 'yourSecretKey',        // Replace with your own secret
   resave: false,
   saveUninitialized: false
 }));
+
+// Set EJS as the templating engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static('public'));
 
-// Routes
-app.get('/', (req, res) => {
-  res.send('Home page!');
-});
+// Import auth routes
+const authRoutes = require('./routes/auth');
+app.use('/', authRoutes);
 
-// Start server
+// Start server on port 3000
 app.listen(3000, () => {
   console.log('Server running at http://localhost:3000');
 });
