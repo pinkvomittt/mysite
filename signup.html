@@ -1,12 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head><title>Sign Up</title></head>
-<body>
-<h2>Create Your PinkVomit Account</h2>
-<form method="POST" action="/api/register">
-  <input name="username" placeholder="Username" required><br>
-  <input name="password" type="password" placeholder="Password" required><br>
-  <button type="submit">Sign Up</button>
+<form id="signupForm" style="max-width: 300px; margin: 40px auto; text-align: center;">
+  <h2 style="font-family: Comic Sans MS;">Sign Up 🦋</h2>
+  <input type="email" id="email" placeholder="Email" required style="padding: 8px; margin-bottom: 10px; width: 100%;"><br>
+  <input type="password" id="password" placeholder="Password" required style="padding: 8px; margin-bottom: 10px; width: 100%;"><br>
+  <button type="submit" style="background: hotpink; color: white; padding: 10px; border: none; cursor: pointer;">Register</button>
+  <p id="signupMessage" style="margin-top: 10px;"></p>
 </form>
-</body>
-</html>
+
+<script>
+  document.getElementById("signupForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("signupMessage");
+
+    msg.textContent = "Registering...";
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        msg.textContent = "✨ Signed up! Check your email!";
+        msg.style.color = "green";
+      } else {
+        msg.textContent = "🚫 " + (data.error || "Signup failed");
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      msg.textContent = "⚠️ Something went wrong";
+      msg.style.color = "red";
+    }
+  });
+</script>
