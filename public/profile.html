@@ -1,0 +1,33 @@
+<body style="font-family: Comic Sans MS; text-align: center; padding: 50px;">
+  <h1> Welcome to your profile </h1>
+  <p id="userInfo">Loading...</p>
+
+  <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; background: hotpink; color: white; border: none;">Logout</button>
+
+  <script>
+    async function getProfile() {
+      const token = localStorage.getItem("access_token");
+      const res = await fetch("https://legghxaprgxcxbskvhgh.supabase.co/auth/v1/user", {
+        headers: {
+          "Authorization": "Bearer " + token,
+          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw"
+        }
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById("userInfo").textContent = "Logged in as: " + data.email;
+      } else {
+        document.getElementById("userInfo").textContent = "⚠️ Error loading profile";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("access_token");
+      window.location.href = "/login.html";
+    }
+
+    getProfile();
+  </script>
+</body>
