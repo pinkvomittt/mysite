@@ -1,6 +1,6 @@
 // models/User.js
 
-const users = {}; // This is a placeholder. Replace with a real DB in the future.
+const users = {}; // In-memory user store (for now)
 
 function getUserByUsername(username) {
   return users[username] || null;
