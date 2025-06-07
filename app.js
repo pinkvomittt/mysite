@@ -30,7 +30,8 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 });
-const profileRoutes = require('./routes/profile');
-app.use('/profile', profileRoutes);
+const profileRouter = require('./routes/profile');
+app.use('/profile', profileRouter);
+
 
 " " 
