@@ -1,0 +1,44 @@
+<form id="loginForm" style="max-width: 300px; margin: 40px auto; text-align: center;">
+  <h2 style="font-family: Comic Sans MS;">Login ✨</h2>
+  <input type="email" id="email" placeholder="Email" required style="padding: 8px; margin-bottom: 10px; width: 100%;"><br>
+  <input type="password" id="password" placeholder="Password" required style="padding: 8px; margin-bottom: 10px; width: 100%;"><br>
+  <button type="submit" style="background: mediumorchid; color: white; padding: 10px; border: none; cursor: pointer;">Login</button>
+  <p id="loginMessage" style="margin-top: 10px;"></p>
+</form>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("loginMessage");
+
+    msg.textContent = "Logging in...";
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        msg.textContent = "✅ Logged in!";
+        msg.style.color = "green";
+
+        // Save token locally (for later use)
+        localStorage.setItem("access_token", data.access_token);
+
+        // Redirect to your profile or homepage
+        window.location.href = "/profile.html";
+      } else {
+        msg.textContent = "🚫 " + (data.error || "Login failed");
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      msg.textContent = "⚠️ Something went wrong";
+      msg.style.color = "red";
+    }
+  });
+</script>
