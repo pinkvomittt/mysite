@@ -1,34 +1,45 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User'); // your User model
-const { ensureAuthenticated } = require('../middleware/auth'); // middleware to check login
+const path = require('path');
+const User = require('../models/User'); // Make sure this path is correct
 
-// Show the profile edit form
-router.get('/edit', ensureAuthenticated, async (req, res) => {
-  const user = await User.findById(req.user._id);
-  res.render('profile-edit', { user });
+// Middleware to check if user is logged in
+function isAuthenticated(req, res, next) {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+  next();
+}
+
+// GET /profile - serve profile.html
+router.get('/', isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/profile.html'));
 });
 
-// Handle profile update form submission
-router.post('/edit', ensureAuthenticated, async (req, res) => {
+// POST /profile - save customization settings
+router.post('/', isAuthenticated, express.json(), async (req, res) => {
   const { bio, favoriteColor } = req.body;
+
   try {
-    await User.findByIdAndUpdate(req.user._id, {
-      'profile.bio': bio,
-      'profile.favoriteColor': favoriteColor
+    await User.findByIdAndUpdate(req.session.userId, {
+      bio,
+      favoriteColor
     });
-    res.redirect(`/profile/${req.user.username}`);
+    res.json({ message: 'Profile updated successfully' });
   } catch (err) {
-    console.error(err);
-    res.render('profile-edit', { user: req.body, error: 'Failed to update profile' });
+    console.error('Error updating profile:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 
-// Public profile page by username
-router.get('/:username', async (req, res) => {
-  const user = await User.findOne({ username: req.params.username });
-  if (!user) return res.status(404).send('User not found');
-  res.render('profile', { user });
+// Optional: GET /profile/data - return profile data as JSON
+router.get('/data', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId).select('bio favoriteColor');
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load profile data' });
+  }
 });
 
 module.exports = router;
