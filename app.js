@@ -4,12 +4,16 @@ const path = require('path');
 
 const app = express();
 
-// Middleware to parse form data
+// Middleware to parse form data and JSON
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Serve static files from public/
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Setup session middleware
 app.use(session({
-  secret: 'yourSecretKey',        // Replace with your own secret
+  secret: 'yourSecretKey', // Replace with your own secret
   resave: false,
   saveUninitialized: false
 }));
@@ -18,20 +22,17 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Import auth routes
+// Import and use auth routes
 const authRoutes = require('./routes/auth');
 app.use('/', authRoutes);
 
-// Start server on port 3000
-app.listen(3000, () => {
-  console.log('Server running at http://localhost:3000');
-  const PORT = process.env.PORT || 3000;
+// ✅ Import and use profile routes
+const profileRoutes = require('./routes/profile');
+app.use('/profile', profileRoutes);
+
+// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-});
-const profileRouter = require('./routes/profile');
-app.use('/profile', profileRouter);
 
-
-" " 
