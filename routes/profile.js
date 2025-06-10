@@ -13,7 +13,8 @@ function isAuthenticated(req, res, next) {
 
 // GET /profile - serve profile.html
 router.get('/', isAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/profile.html'));
+ res.render('profile');
+
 });
 
 // POST /profile - save customization settings
