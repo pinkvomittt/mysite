@@ -1,3 +1,6 @@
+app.get('/test', (req, res) => {
+  res.send('Test route is working');
+});
 const express = require('express');
 const router = express.Router();
 const path = require('path');
