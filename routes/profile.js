@@ -7,7 +7,7 @@ const path = require('path');
 const User = require('../models/User'); // Make sure this path is correct
 
 // Middleware to check if user is logged in
-function isAuthenticated(req, res, next) {
+function //isAuthenticated(req, res, next) {
   if (!req.session.userId) {
     return res.redirect('/login');
   }
