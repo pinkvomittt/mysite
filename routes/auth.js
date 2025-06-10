@@ -7,3 +7,14 @@ router.get('/login', (req, res) => {
 });
 
 module.exports = router;
+router.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // your real login logic here
+  if (username === 'test' && password === 'password') {
+    req.session.user = { username };
+    res.redirect('/profile');
+  } else {
+    res.send('Invalid credentials');
+  }
+});
