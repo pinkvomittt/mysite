@@ -26,16 +26,10 @@ app.set('views', path.join(__dirname, 'views'));
 const authRoutes = require('./routes/auth');
 app.use('/', authRoutes);
 
-// ✅ Import and use profile routes
+// Import and use profile routes
 const profileRoutes = require('./routes/profile');
 app.use('/profile', profileRoutes);
 
-// Start server
-const PORT = process.env.PORT || 3000;
-//app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-app.use(express.static(path.join(__dirname, 'public')));
+// ✅ No app.listen() needed — Vercel handles the server
 module.exports = app;
-
 
