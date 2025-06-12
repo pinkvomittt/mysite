@@ -1,13 +1,14 @@
 app.get('/test', (req, res) => {
   res.send('Test route is working');
 });
+
 const express = require('express');
 const router = express.Router();
 const path = require('path');
 const User = require('../models/User'); // Make sure this path is correct
 
-// Middleware to check if user is logged in
-function //isAuthenticated(req, res, next) {
+// ✅ Middleware to check if user is logged in
+function isAuthenticated(req, res, next) {
   if (!req.session.userId) {
     return res.redirect('/login');
   }
@@ -16,8 +17,7 @@ function //isAuthenticated(req, res, next) {
 
 // GET /profile - serve profile.html
 router.get('/', isAuthenticated, (req, res) => {
- res.render('profile');
-
+  res.render('profile');
 });
 
 // POST /profile - save customization settings
