@@ -30,6 +30,8 @@ app.use('/', authRoutes);
 const profileRoutes = require('./routes/profile');
 app.use('/profile', profileRoutes);
 
-// ✅ No app.listen() needed — Vercel handles the server
+// ❌ DO NOT use app.listen() on Vercel
+
+// ✅ Export the app for Vercel
 module.exports = app;
 
