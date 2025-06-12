@@ -1,11 +1,13 @@
-app.get('/test', (req, res) => {
-  res.send('Test route is working');
-});
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
 
-const app = express();
+const app = express();  // Initialize app first!
+
+// Now you can safely use app:
+app.get('/test', (req, res) => {
+  res.send('Test route is working');
+});
 
 // Middleware to parse form data and JSON
 app.use(express.urlencoded({ extended: true }));
@@ -37,4 +39,3 @@ app.use('/profile', profileRoutes);
 
 // ✅ Export the app for Vercel
 module.exports = app;
-
