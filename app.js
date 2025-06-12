@@ -1,3 +1,6 @@
+app.get('/test', (req, res) => {
+  res.send('Test route is working');
+});
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
