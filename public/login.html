@@ -36,28 +36,33 @@
   </form>
 
   <div id="error" class="error" style="display: none;">⚠️ Login failed. Try again.</div>
+<script>
+  document.querySelector("form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
 
-  <script>
-    document.querySelector("form").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const form = e.target;
-      const email = form.email.value;
-      const password = form.password.value;
-
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-
-      if (!response.ok) {
-        document.getElementById("error").style.display = "block";
-      } else {
-        document.getElementById("error").style.display = "none";
-        // Redirect or show success
-        alert("Login successful!");
-      }
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
     });
-  </script>
+
+    const errorBox = document.getElementById("error");
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      errorBox.textContent = "⚠️ " + (errorData.error || "Login failed");
+      errorBox.style.display = "block";
+    } else {
+      // Optional: save user session or token here
+      // const data = await response.json();
+      window.location.href = "/profile.html"; // ✅ redirect on success
+    }
+  });
+</script>
+
+
 </body>
 </html>
