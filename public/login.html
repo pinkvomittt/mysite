@@ -18,26 +18,28 @@
     <div class="error" id="error"></div>
   </form>
 
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const email = this.email.value;
-      const password = this.password.value;
+ <script>
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  const email = this.email.value;
+  const password = this.password.value;
 
-      const result = await res.json();
+  const res = await fetch("/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
 
-      if (res.ok) {
-        window.location.href = "/profile.html";
-      } else {
-        document.getElementById("error").textContent = result.error || "Login failed.";
-      }
-    });
-  </script>
+  const result = await res.json();
+
+  if (res.ok) {
+    window.location.href = "/profile.html";
+  } else {
+    document.getElementById("error").textContent = result.error || "Login failed.";
+  }
+});
+</script>
+
 </body>
 </html>
