@@ -3,66 +3,41 @@
 <head>
   <title>Login 🦋</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-    input {
-      padding: 10px;
-      width: 250px;
-      margin: 10px;
-    }
-    button {
-      background-color: #d46ad2;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-    }
-    .error {
-      color: red;
-      margin-top: 15px;
-    }
+    body { font-family: sans-serif; text-align: center; padding: 50px; }
+    input { padding: 10px; width: 250px; margin: 10px; }
+    button { background-color: #d46ad2; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+    .error { color: red; margin-top: 15px; }
   </style>
 </head>
 <body>
   <h1>Login ✨</h1>
-
-  <form method="POST" action="/api/login">
-    <input type="text" name="email" placeholder="Username or Email" required /><br />
+  <form id="loginForm">
+    <input type="email" name="email" placeholder="Email" required /><br />
     <input type="password" name="password" placeholder="Password" required /><br />
     <button type="submit">Login</button>
+    <div class="error" id="error"></div>
   </form>
 
-  <div id="error" class="error" style="display: none;">⚠️ Login failed. Try again.</div>
-<script>
-  document.querySelector("form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const email = form.email.value;
-    const password = form.password.value;
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const email = this.email.value;
+      const password = this.password.value;
 
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        window.location.href = "/profile.html";
+      } else {
+        document.getElementById("error").textContent = result.error || "Login failed.";
+      }
     });
-
-    const errorBox = document.getElementById("error");
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      errorBox.textContent = "⚠️ " + (errorData.error || "Login failed");
-      errorBox.style.display = "block";
-    } else {
-      // Optional: save user session or token here
-      // const data = await response.json();
-      window.location.href = "/profile.html"; // ✅ redirect on success
-    }
-  });
-</script>
-
-
+  </script>
 </body>
 </html>
