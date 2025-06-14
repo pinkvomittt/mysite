@@ -1,6 +1,4 @@
-const fetch = require("node-fetch");
-
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -15,7 +13,7 @@ module.exports = async function handler(req, res) {
     const response = await fetch("https://legghxaprgxcxbskvhgh.supabase.co/auth/v1/token?grant_type=password", {
       method: "POST",
       headers: {
-        apikey: process.env.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw,
+        apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw", // Replace with your real key
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ email, password })
@@ -27,9 +25,9 @@ module.exports = async function handler(req, res) {
       return res.status(response.status).json({ error: data.error_description || data.error });
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ success: true });
   } catch (err) {
-    console.error("Unexpected error:", err);
+    console.error("Login error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
-};
+}
