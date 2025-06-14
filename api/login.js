@@ -1,4 +1,6 @@
-export default async function handler(req, res) {
+const fetch = require("node-fetch");
+
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -13,7 +15,7 @@ export default async function handler(req, res) {
     const response = await fetch("https://legghxaprgxcxbskvhgh.supabase.co/auth/v1/token?grant_type=password", {
       method: "POST",
       headers: {
-        apikey: "YOUR_SUPABASE_API_KEY",
+        apikey: process.env.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ email, password })
@@ -30,4 +32,4 @@ export default async function handler(req, res) {
     console.error("Unexpected error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
