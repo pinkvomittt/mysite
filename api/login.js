@@ -1,33 +1,29 @@
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
 
-  try {
-    const { email, password } = req.body;
+  const email = document.querySelector('input[name="email"]').value;
+  const password = document.querySelector('input[name="password"]').value;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+  const res = await fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+
+  const result = await res.json();
+  const errorDiv = document.getElementById('error');
+
+  if (res.ok) {
+    // Now fetch the username to redirect!
+    const usernameRes = await fetch(`/api/get-username?email=${encodeURIComponent(email)}`);
+    const usernameData = await usernameRes.json();
+
+    if (usernameRes.ok) {
+      window.location.href = `/users/${usernameData.username}.html`;
+    } else {
+      errorDiv.innerText = 'Login succeeded, but failed to find your profile!';
     }
-
-    const response = await fetch("https://legghxaprgxcxbskvhgh.supabase.co/auth/v1/token?grant_type=password", {
-      method: "POST",
-      headers: {
-        apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw", // Replace with your real key
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.error_description || data.error });
-    }
-
-    res.status(200).json({ success: true });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+  } else {
+    errorDiv.innerText = `Login failed: ${result.error}`;
   }
-}
+});
