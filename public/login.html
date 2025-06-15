@@ -18,28 +18,30 @@
     <div class="error" id="error"></div>
   </form>
 
- <script>
-document.getElementById("loginForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
+<script>
+  document.getElementById('login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-  const email = this.email.value;
-  const password = this.password.value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-  const res = await fetch("/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const result = await res.json();
+    const message = document.getElementById('message');
+
+    if (res.ok) {
+      message.innerText = `Welcome back! Redirecting...`;
+      // Optionally: Save token to localStorage: localStorage.setItem('token', result.token)
+      window.location.href = `/users/${result.username}.html`;
+    } else {
+      message.innerText = `Login failed: ${result.error}`;
+    }
   });
-
-  const result = await res.json();
-
-  if (res.ok) {
-    window.location.href = "/profile.html";
-  } else {
-    document.getElementById("error").textContent = result.error || "Login failed.";
-  }
-});
 </script>
-
 </body>
 </html>
