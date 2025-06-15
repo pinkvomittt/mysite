@@ -18,29 +18,37 @@
     <div class="error" id="error"></div>
   </form>
 <script>
-  document.getElementById('loginForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const email = document.querySelector('input[name="email"]').value;
-    const password = document.querySelector('input[name="password"]').value;
-
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-
-    const result = await res.json();
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('loginForm');
     const errorDiv = document.getElementById('error');
 
-    if (res.ok) {
-      errorDiv.innerText = `Welcome back! Redirecting...`;
-      window.location.href = `/users/${result.username}`;
-    } else {
-      errorDiv.innerText = `Login failed: ${result.error}`;
-    }
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const email = document.querySelector('input[name="email"]').value;
+      const password = document.querySelector('input[name="password"]').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          window.location.href = `/users/${data.username}`;
+        } else {
+          errorDiv.textContent = `Login failed: ${data.error}`;
+        }
+      } catch (err) {
+        errorDiv.textContent = 'Server error. Try again later.';
+      }
+    });
   });
 </script>
+
 
 </body>
 </html>
