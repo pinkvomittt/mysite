@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Profile</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    label { display: block; margin-top: 15px; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #d46ad2;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+    }
+    #message { margin-top: 20px; color: green; }
+  </style>
+</head>
+<body>
+  <h1>Edit Your Profile</h1>
+
+  <form id="profileForm">
+    <label>Username:
+      <input type="text" id="username" name="username" required />
+    </label>
+
+    <label>Bio:
+      <textarea id="bio" name="bio" rows="4"></textarea>
+    </label>
+
+    <label>Profile Picture URL:
+      <input type="text" id="profile_pic_url" name="profile_pic_url" />
+    </label>
+
+    <label>Background Color (hex):
+      <input type="text" id="bg_color" name="bg_color" placeholder="#ffccff" />
+    </label>
+
+    <button type="submit">Save Changes</button>
+    <div id="message"></div>
+  </form>
+
+  <script>
+    const email = localStorage.getItem('email'); // ← Make sure you're storing this on login
+
+    async function loadProfile() {
+      const res = await fetch(`/api/get-profile-by-email?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById('username').value = data.username || '';
+        document.getElementById('bio').value = data.bio || '';
+        document.getElementById('profile_pic_url').value = data.profile_pic_url || '';
+        document.getElementById('bg_color').value = data.bg_color || '';
+      } else {
+        document.getElementById('message').innerText = 'Could not load profile.';
+      }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const updatedData = {
+        email,
+        username: document.getElementById('username').value,
+        bio: document.getElementById('bio').value,
+        profile_pic_url: document.getElementById('profile_pic_url').value,
+        bg_color: document.getElementById('bg_color').value,
+      };
+
+      const res = await fetch('/api/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData),
+      });
+
+      const result = await res.json();
+      document.getElementById('message').innerText = result.success ? 'P
