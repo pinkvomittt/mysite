@@ -17,13 +17,12 @@
     <button type="submit">Login</button>
     <div class="error" id="error"></div>
   </form>
-
 <script>
-  document.getElementById('login-form').addEventListener('submit', async function (e) {
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const email = document.querySelector('input[name="email"]').value;
+    const password = document.querySelector('input[name="password"]').value;
 
     const res = await fetch('/api/login', {
       method: 'POST',
@@ -32,16 +31,16 @@
     });
 
     const result = await res.json();
-    const message = document.getElementById('message');
+    const errorDiv = document.getElementById('error');
 
     if (res.ok) {
-      message.innerText = `Welcome back! Redirecting...`;
-      // Optionally: Save token to localStorage: localStorage.setItem('token', result.token)
-      window.location.href = `/users/${result.username}.html`;
+      errorDiv.innerText = `Welcome back! Redirecting...`;
+      window.location.href = `/users/${result.username}`;
     } else {
-      message.innerText = `Login failed: ${result.error}`;
+      errorDiv.innerText = `Login failed: ${result.error}`;
     }
   });
 </script>
+
 </body>
 </html>
