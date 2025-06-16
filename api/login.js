@@ -6,37 +6,29 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  console.log(`🔁 [login] HTTP ${req.method} Request Received`);
-
-  if (req.method !== 'POST') {
-    console.log('❌ Method Not Allowed:', req.method);
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  let email, password;
   try {
-    ({ email, password } = req.body);
-    console.log('🧾 Payload:', { email, password: password ? '***' : null });
-  } catch (e) {
-    console.error('📥 Invalid JSON body:', e.message);
-    return res.status(400).json({ error: 'Invalid JSON' });
-  }
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
 
-  if (!email || !password) {
-    console.log('❗ Missing Fields:', { email, password });
-    return res.status(400).json({ error: 'Missing email or password' });
-  }
+    const { email, password } = req.body;
 
-  try {
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Missing email or password' });
+    }
+
+    // Log input
+    console.log('Login attempt:', email);
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      console.error('🔐 Supabase auth error:', error.message);
-      return res.status(401).json({ error: error.message });
+      console.log('Supabase login error:', error.message);
+      return res.status(401).json({ error: 'Supabase login error: ' + error.message });
     }
 
     const user = data.user;
-    console.log('✅ Supabase login success:', user.id);
+    console.log('User signed in:', user.id);
 
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -45,16 +37,16 @@ export default async function handler(req, res) {
       .single();
 
     if (profileError || !profile) {
-      console.error('👤 Profile lookup failed:', profileError);
-      return res.status(404).json({ error: 'Profile not found' });
+      console.log('Profile error:', profileError);
+      return res.status(404).json({ error: 'Profile not found for user ID ' + user.id });
     }
 
-    console.log('🎉 Found username:', profile.username);
     return res.status(200).json({ username: profile.username });
 
   } catch (err) {
-    console.error('💥 Server error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.log('Unexpected server error:', err.message);
+    // ⚠️ Return the actual error so you can see it in the browser
+    return res.status(500).json({ error: 'Server crash: ' + err.message });
   }
 }
 
