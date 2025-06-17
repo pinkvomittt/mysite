@@ -14,42 +14,31 @@
   <form id="loginForm">
     <input type="email" name="email" placeholder="Email" required /><br />
     <input type="password" name="password" placeholder="Password" required /><br />
+    <imput type="username" name="username" placeholder="Username" required /><br />
     <button type="submit">Login</button>
     <div class="error" id="error"></div>
   </form>
 <script>
-  document.getElementById("loginForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-    const email = this.email.value;
-    const password = this.password.value;
-    const errorBox = document.getElementById("error");
+  const email = this.email.value;
+  const password = this.password.value;
 
-    // 1) Perform login
-    const loginRes = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const loginData = await loginRes.json();
-
-    if (!loginRes.ok) {
-      errorBox.textContent = loginData.error || "Login failed.";
-      return;
-    }
-
-    // 2) Fetch the username for this email
-    const profileRes = await fetch(`/api/getProfileByEmail?email=${encodeURIComponent(email)}`);
-    const profileData = await profileRes.json();
-
-    if (!profileRes.ok) {
-      errorBox.textContent = profileData.error || "Could not load profile.";
-      return;
-    }
-
-    // 3) Redirect to the user’s page
-    window.location.href = `/users/${profileData.username}`;
+  const res = await fetch("/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
   });
+
+  const result = await res.json();
+
+  if (res.ok && result.username) {
+    window.location.href = `/users/${result.username}`;
+  } else {
+    document.getElementById("error").textContent = result.error || "Login failed.";
+  }
+});
 </script>
 
 
