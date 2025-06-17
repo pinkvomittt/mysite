@@ -1,52 +1,43 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 export default async function handler(req, res) {
-  try {
-    if (req.method !== 'POST') {
-      return res.status(405).json({ error: 'Method not allowed' });
-    }
+  console.log("➡️ /api/login called, method:", req.method);
 
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
     const { email, password } = req.body;
+    console.log("📩 Received payload:", { email, password: password ? "******" : null });
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'Missing email or password' });
+      console.log("❗ Missing email or password");
+      return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Log input
-    console.log('Login attempt:', email);
+    const response = await fetch(
+      "https://legghxaprgxcxbskvhgh.supabase.co/auth/v1/token?grant_type=password",
+      {
+        method: "POST",
+        headers: {
+          apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      }
+    );
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const data = await response.json();
+    console.log("🔁 Supabase response (status " + response.status + "):", data);
 
-    if (error) {
-      console.log('Supabase login error:', error.message);
-      return res.status(401).json({ error: 'Supabase login error: ' + error.message });
+    if (!response.ok) {
+      console.log("❌ Login failed:", data.error_description || data.error);
+      return res.status(response.status).json({ error: data.error_description || data.error });
     }
 
-    const user = data.user;
-    console.log('User signed in:', user.id);
-
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile) {
-      console.log('Profile error:', profileError);
-      return res.status(404).json({ error: 'Profile not found for user ID ' + user.id });
-    }
-
-    return res.status(200).json({ username: profile.username });
-
+    console.log("✅ Login successful for", email);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    console.log('Unexpected server error:', err.message);
-    // ⚠️ Return the actual error so you can see it in the browser
-    return res.status(500).json({ error: 'Server crash: ' + err.message });
+    console.error("🔥 Unexpected error in /api/login:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
