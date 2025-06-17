@@ -9,10 +9,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "All fields are required" });
 
   try {
-    const signupRes = await fetch("https://YOUR_PROJECT.supabase.co/auth/v1/signup", {
+    const signupRes = await fetch("https://legghxaprgxcxbskvhgh.supabase.co/auth/v1/signup", {
       method: "POST",
       headers: {
-        apikey: "YOUR_SUPABASE_API_KEY",
+        apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ email, password }),
@@ -27,11 +27,11 @@ export default async function handler(req, res) {
     const user_id = signupData.user?.id;
     if (!user_id) return res.status(500).json({ error: "User ID not returned" });
 
-    const insertProfile = await fetch("https://YOUR_PROJECT.supabase.co/rest/v1/profiles", {
+    const insertProfile = await fetch("https://legghxaprgxcxbskvhgh.supabase.co/rest/v1/profiles", {
       method: "POST",
       headers: {
-        apikey: "YOUR_SUPABASE_API_KEY",
-        Authorization: `Bearer ${YOUR_SERVICE_ROLE_KEY}`,
+        apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw",
+        Authorization: `Bearer ${eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0OTI2NDY3OSwiZXhwIjoyMDY0ODQwNjc5fQ.0xvR0B85ylHoZ1yh6CJHsqj_rPG9k0LIeUCOGbM6Iho}`,
         "Content-Type": "application/json",
         Prefer: "return=minimal"
       },
