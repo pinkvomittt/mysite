@@ -18,34 +18,37 @@
     <div class="error" id="error"></div>
   </form>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('loginForm');
-    const errorDiv = document.getElementById('error');
+  document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
+    const email = this.email.value;
+    const password = this.password.value;
+    const errorBox = document.getElementById("error");
 
-      const email = document.querySelector('input[name="email"]').value;
-      const password = document.querySelector('input[name="password"]').value;
-
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          window.location.href = `/users/${data.username}`;
-        } else {
-          errorDiv.textContent = `Login failed: ${data.error}`;
-        }
-      } catch (err) {
-        errorDiv.textContent = 'Server error. Try again later.';
-      }
+    // 1) Perform login
+    const loginRes = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
+    const loginData = await loginRes.json();
+
+    if (!loginRes.ok) {
+      errorBox.textContent = loginData.error || "Login failed.";
+      return;
+    }
+
+    // 2) Fetch the username for this email
+    const profileRes = await fetch(`/api/getProfileByEmail?email=${encodeURIComponent(email)}`);
+    const profileData = await profileRes.json();
+
+    if (!profileRes.ok) {
+      errorBox.textContent = profileData.error || "Could not load profile.";
+      return;
+    }
+
+    // 3) Redirect to the user’s page
+    window.location.href = `/users/${profileData.username}`;
   });
 </script>
 
