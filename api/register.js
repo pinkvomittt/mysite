@@ -1,18 +1,21 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
   const { email, password, username } = req.body;
 
-  if (!email || !password || !username)
+  if (!email || !password || !username) {
     return res.status(400).json({ error: "All fields are required" });
+  }
 
-  // ✅ Store keys and URL
+  // Supabase config
   const SUPABASE_URL = "https://legghxaprgxcxbskvhgh.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjQ2NzksImV4cCI6MjA2NDg0MDY3OX0.d8T2APt1hvpgiFS4l_z0_LAOo3--XKQ0y95s_XxSaLw";
   const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZ2doeGFwcmd4Y3hic2t2aGdoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0OTI2NDY3OSwiZXhwIjoyMDY0ODQwNjc5fQ.0xvR0B85ylHoZ1yh6CJHsqj_rPG9k0LIeUCOGbM6Iho";
 
   try {
-    // ✅ 1. Sign up user in Supabase Auth
+    // 🔹 1. Create user in Supabase Auth
     const signupRes = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method: "POST",
       headers: {
@@ -23,15 +26,18 @@ export default async function handler(req, res) {
     });
 
     const signupData = await signupRes.json();
+    console.log("SIGNUP RESPONSE:", signupRes.status, signupData);
 
     if (!signupRes.ok) {
       return res.status(signupRes.status).json({ error: signupData.error_description || signupData.error });
     }
 
     const user_id = signupData.user?.id;
-    if (!user_id) return res.status(500).json({ error: "User ID not returned" });
+    if (!user_id) {
+      return res.status(500).json({ error: "User ID not returned by Supabase" });
+    }
 
-    // ✅ 2. Create a profile row
+    // 🔹 2. Insert profile in `profiles` table
     const insertProfile = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
       method: "POST",
       headers: {
@@ -43,25 +49,18 @@ export default async function handler(req, res) {
       body: JSON.stringify({ id: user_id, email, username }),
     });
 
+    const profileText = await insertProfile.text();
+    console.log("PROFILE INSERT RESPONSE:", insertProfile.status, profileText);
+
     if (!insertProfile.ok) {
       return res.status(insertProfile.status).json({ error: "Failed to create profile" });
     }
 
     return res.status(200).json({ success: true });
+
   } catch (err) {
     console.error("Register error:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-  console.log("REQ BODY:", req.body); // Add this inside the POST block
-
-// After signup fetch:
-console.log("SIGNUP RES:", signupRes.status);
-console.log("SIGNUP DATA:", signupData);
-
-// After insert profile fetch:
-console.log("PROFILE INSERT RES:", insertProfile.status);
-const insertProfileText = await insertProfile.text();
-console.log("PROFILE INSERT BODY:", insertProfileText);
-
 }
 
