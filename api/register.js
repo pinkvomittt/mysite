@@ -52,5 +52,16 @@ export default async function handler(req, res) {
     console.error("Register error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
+  console.log("REQ BODY:", req.body); // Add this inside the POST block
+
+// After signup fetch:
+console.log("SIGNUP RES:", signupRes.status);
+console.log("SIGNUP DATA:", signupData);
+
+// After insert profile fetch:
+console.log("PROFILE INSERT RES:", insertProfile.status);
+const insertProfileText = await insertProfile.text();
+console.log("PROFILE INSERT BODY:", insertProfileText);
+
 }
 
