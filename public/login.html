@@ -32,7 +32,14 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     body: JSON.stringify({ email, password }),
   });
 
-  const result = await res.json();
+let result;
+try {
+  result = await res.json();
+} catch (err) {
+  document.getElementById("error").textContent = "Invalid server response.";
+  return;
+}
+
 
   if (res.ok && result.username) {
     window.location.href = `/users/${result.username}`;
