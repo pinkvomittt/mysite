@@ -4,17 +4,8 @@
     { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
-    {
-      "src": "/users/(?<username>[^/]+)",
-      "dest": "/api/users/[username].js"
-    },
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/users/([^/]+)", "dest": "/api/users/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
