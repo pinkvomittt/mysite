@@ -9,6 +9,10 @@
       "dest": "/api/users/[username].js"
     },
     {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/$1"
     }
